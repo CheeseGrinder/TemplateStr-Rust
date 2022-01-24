@@ -1,5 +1,5 @@
 [package]
-name = "template_str"
+name = "template-str"
 version = "0.1.0"
 edition = "2018"
 
@@ -7,4 +7,7 @@ edition = "2018"
 
 [dependencies]
 regex = "1.5.4"
-lazy_static = "1.4.0"
+chrono = "0.4.19"
+
+[build]
+rustflags = ["-Awarnings"]
