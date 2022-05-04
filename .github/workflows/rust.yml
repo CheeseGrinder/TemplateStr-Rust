@@ -1,0 +1,33 @@
+name: Rust Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  Test-Rust:
+
+    strategy:
+      matrix:
+        rust: ["1.50.0","1.51.0","1.52.1","1.53.0","1.54.0","1.55.0","1.56.1","1.57.0","1.58.1","1.59.0","1.60.0"]
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup rust - ${{matrix.rust}}
+      uses : actions-rs/toolchain@v1 
+      with :
+        toolchain : ${{matrix.rust}}
+        override : true 
+    
+    - name: Run tests
+      run: |
+        rustc -V
+        cargo test --verbose
