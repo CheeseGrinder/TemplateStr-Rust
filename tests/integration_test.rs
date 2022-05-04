@@ -32,14 +32,16 @@ impl GlobalVar {
         return GlobalVar {
             list_func: list_func![test, test_type],
             var_map: varmap!{
+                "Build" => "Succes",
+                "var" => "int",
                 "str" => "Jame",
-                "age" => 32,
+                "int" => 32,
                 "float" => 4.2,
                 "bool" => true,
                 "lower" => "azerty",
                 "upper" => "AZERTY",
                 "swap" => "AzErTy",
-                "cfold" => "grüßen",
+                // "cfold" => "grüßen",
                 "Map" => varmap!{
                     "value" => "Map in Map",
                 },
@@ -85,7 +87,7 @@ mod function {
     use super::*;
 
     #[test]
-    fn test_interne_function() {
+    fn test_intern_function() {
         let var = GlobalVar::new();
 
         let uppercase = vec!["{{@uppercase lower}}", "AZERTY"];
@@ -117,7 +119,7 @@ mod function {
         let var = GlobalVar::new();
 
         let test_1 = vec!["{{@test}}", "Test custom Function"];
-        let test_2 = vec![r#"{{@test_type "text1" 'text2' `text3` <b:True> <n:123> <n:123.4> age}}"#, "start : test Str : test Str : test Str : test Bool : test Int : test Float : test Str"];
+        let test_2 = vec![r#"{{@test_type "text1" 'text2' `text3` <b:True> <n:123> <n:123.4> int}}"#, "start : test Str : test Str : test Str : test Bool : test Int : test Float : test Str"];
 
         let parser = TemplateStr::new(Some(var.var_map), Some(var.list_func));
 
