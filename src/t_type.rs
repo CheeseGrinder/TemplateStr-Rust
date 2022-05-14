@@ -8,7 +8,7 @@ pub type VariableMap = HashMap<String, TVal>;
 pub type Func = fn (list: Vec<TVal>) -> String;
 pub type FuncMap = HashMap<String, Func>;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)] 
 pub enum TVal {
     Str(String),
     Int(i32),

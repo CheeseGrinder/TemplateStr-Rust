@@ -17,7 +17,7 @@ fn test_type(list: Vec<TVal>) -> String {
             TVal::Float(_) => { text = format!("{} : {}", text, "test Float") },
             TVal::Bool(_) => { text = format!("{} : {}", text, "test Bool") },
             TVal::Hashmap(_) => { text = format!("{} : {}", text, "test Hashmap") },
-            _ => { text = format!("{} : {}", text, "None") },
+            // _ => { text = format!("{} : {}", text, "None") },
         };
     }
     return text;
@@ -48,7 +48,7 @@ fn main() {
 
     let mut template = TemplateStr::new(Some(map), Some(vec));
 
-    let text = template.parse(r#"{{@test_type "lol0" 'lol1' `lol2` <n:123> <n:123.4> <b:True> bool}} - {{@date}} - {{@dateTime}} - {{$Map.value}}"#.to_string());
+    let text = template.parse(r#"{{#<n:5> < "test56": yes || no}}"#.to_string());
 
     println!("{}", text);
     

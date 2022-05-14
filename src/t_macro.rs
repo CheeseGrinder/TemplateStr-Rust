@@ -1,6 +1,3 @@
-
-
-
 #[macro_export]
 macro_rules! varmap {
 
@@ -77,3 +74,16 @@ macro_rules! attempt { // `try` is a reserved keyword
        attempt!{@recurse ($e) { $($tail)* } $($handler)* }
     };
  }
+
+#[macro_export]
+
+macro_rules! ternary {
+    ($test:expr => $true_expr:expr; $false_expr:expr) => {
+        if $test {
+            $true_expr
+        }
+        else {
+            $false_expr
+        }
+    }
+}

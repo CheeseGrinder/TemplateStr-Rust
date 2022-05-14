@@ -76,6 +76,31 @@ fn swap_case(text: &String) -> String {
 
 }
 
+fn convert_tval_to_float(value1: &TVal, value2: &TVal) -> (f64, f64) {
+
+    let value1_f: f64;
+    let value2_f: f64;
+
+    match value1 {
+        TVal::Int(i) => {value1_f = *i as f64}
+        TVal::Str(i) => {value1_f = i.len() as f64},
+        TVal::Float(i) => {value1_f = *i},
+        TVal::Bool(i) => {value1_f = *i as i32 as f64},
+        _ => todo!(),
+    }
+
+    match value2 {
+        TVal::Int(i) => {value2_f = *i as f64}
+        TVal::Str(i) => {value2_f = i.len() as f64},
+        TVal::Float(i) => {value2_f = *i},
+        TVal::Bool(i) => {value2_f = *i as i32 as f64},
+        _ => todo!(),
+    }
+
+    return (value1_f, value2_f);
+
+}
+
 fn typing(reg: &Regex, parametres: String, var_map: &VariableMap, typing: Option<String>) -> Vec<TVal> {
 
     let mut vec_typing: Vec<TVal> = vec![];
@@ -83,22 +108,14 @@ fn typing(reg: &Regex, parametres: String, var_map: &VariableMap, typing: Option
     if typing.is_none() {
         for group_param in find_all_group(reg, &parametres) {
 
-            println!("{:?}", group_param);
-
-
             if group_param.contains_key("str_double") && group_param["str_double"] != "" {
                 vec_typing.push(TVal::Str(group_param["str_double"].to_string()));
-                print!("double");
 
             } else if group_param.contains_key("str_single") && group_param["str_single"].to_string() != "" {
                 vec_typing.push(TVal::Str(group_param["str_single"].to_string()));
-                print!("single");
-
 
             } else if group_param.contains_key("str_back") && group_param["str_back"] != "" {
                 vec_typing.push(TVal::Str(group_param["str_back"].to_string()));
-                print!("back");
-
 
             } else if group_param.contains_key("bool") && group_param["bool"].to_string() != "" {
 
@@ -107,7 +124,7 @@ fn typing(reg: &Regex, parametres: String, var_map: &VariableMap, typing: Option
                 match group_param["bool"].as_ref() {
                     "True" => b = true,
                     "False" => b = false,
-                    _ => panic!("nique"),
+                    _ => panic!("?"),
                 }
 
                 vec_typing.push(TVal::Bool(b))
@@ -167,10 +184,10 @@ impl TemplateStr {
         return TemplateStr {
             variable_map: vmap,
             function_map: fvec,
-            reg_variable: Regex::new(r#"(?P<match>\{\{\$(?P<key>[^{{$}}]+)}})"#).unwrap(),
-            reg_function: Regex::new(r#"(?P<match>\{\{@(?P<function>[^{@}\s]+) ?(?P<key>[^{@}]+)?}})"#).unwrap(),
-            reg_condition: Regex::new(r#"(?P<match>\{\{#(?P<compValue1>[^{#}]+) (?P<compSymbol>[=!<>][=]?) (?P<compValue2>[^{#}]+): (?P<resultValue1>[^{}]+) || (?P<resultValue2>[^{}]+)}})"#).unwrap(),
-            reg_switch: Regex::new(r#"(?P<match>\{\{?(?:(?P<key>[^{?}:]+)|(?P<keyTyped>[^{?}]+):(?P<type>str|int|float)); (?P<val>(?:[^{}]+)=(?:[^{}]+)), default=(?P<default>[^{}]+)}})"#).unwrap(),
+            reg_variable: Regex::new(r#"(?P<match>\$\{\{(?P<key>[^{{$}}]+)}})"#).unwrap(),
+            reg_function: Regex::new(r#"(?P<match>@\{\{(?P<function>[^{@}\s]+) ?(?P<key>[^{@}]+)?}})"#).unwrap(),
+            reg_condition: Regex::new(r#"(?P<match>#\{\{(?P<compValue1>[^{#}]+) (?P<compSymbol>[=!<>][=]?) (?P<compValue2>[^{#}]+): (?P<resultValue1>[^{}]+) \|\| (?P<resultValue2>[^{}]+)}})"#).unwrap(),
+            reg_switch: Regex::new(r#"(?P<match>\?\{\{(?:(?P<key>[^{?}:]+)|(?P<keyTyped>[^{?}]+):(?P<type>str|int|float)); (?P<val>(?:[^{}]+)=(?:[^{}]+)), default=(?P<default>[^{}]+)}})"#).unwrap(),
             reg_typing: Regex::new(r#""(?P<str_double>[^"]+)"|'(?P<str_single>[^']+)'|`(?P<str_back>[^`]+)`|<b:(?P<bool>True|False)>|<n:(?P<number>[0-9_.]+)>|(?P<variable>[^<>' ]+)"#).unwrap(),
         }
     }
@@ -276,11 +293,40 @@ impl TemplateStr {
         return text_ed
     }
 
-    pub fn parse_condition(&self, mut text: String) -> String {
-        text = text;
+    pub fn parse_condition(&self, text: String) -> String {
 
+        if !self.has_condition(text.to_string()) { return text.to_string() };
+        let mut text_ed = text.to_string();
+        
+        for v in find_all_group(&self.reg_condition, &text) {
+            
+            let match_text = &v["match"];
+            let comp_value1 = &v["compValue1"];
+            let comp_value2 = &v["compValue2"];
+            let comp_symbol = &v["compSymbol"];
+            let result_value1 = &v["resultValue1"];
+            let result_value2 = &v["resultValue2"];
 
-        return text
+            let vecteur_typing = typing(&self.reg_typing, comp_value1.to_string() + &" ".to_string() + &comp_value2.to_string(), &self.variable_map, None);
+            
+            if comp_symbol == "==" {
+                text_ed = text_ed.replace(match_text, ternary!(vecteur_typing[0] == vecteur_typing[1] => result_value1; result_value2))
+            } else if comp_symbol == "!="{
+                text_ed = text_ed.replace(match_text, ternary!(vecteur_typing[0] != vecteur_typing[1] => result_value1; result_value2))
+            } else {
+                let v = convert_tval_to_float(&vecteur_typing[0], &vecteur_typing[1]);
+                if comp_symbol == "<="{
+                    text_ed = text_ed.replace(match_text, ternary!(v.0 <= v.1 => result_value1; result_value2))
+                } else if comp_symbol == ">="{
+                    text_ed = text_ed.replace(match_text, ternary!(v.0 >= v.1 => result_value1; result_value2))
+                } else if comp_symbol == "<"{
+                    text_ed = text_ed.replace(match_text, ternary!(v.0 < v.1 => result_value1; result_value2))
+                } else if comp_symbol == ">"{
+                    text_ed = text_ed.replace(match_text, ternary!(v.0 > v.1 => result_value1; result_value2))
+                }
+            }
+        }
+        return text_ed
     }
 
     pub fn parse_switch(&self, mut text: String) -> String {
@@ -288,6 +334,17 @@ impl TemplateStr {
 
 
         return text
+    }
+
+    pub fn has_one(&self, text: String) -> bool {
+
+        let t = text.as_str();
+
+        if self.has_variable(t.to_string()) || self.has_function(t.to_string()) || self.has_condition(t.to_string()) || self.has_switch(t.to_string()) {
+            return true;
+        }
+        return false;
+
     }
 
     pub fn has_variable(&self, text: String) -> bool {
