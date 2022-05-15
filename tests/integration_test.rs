@@ -71,7 +71,7 @@ mod variable {
         let text_4 = vec!["${{word}}", "None"];
         let text_5 = vec!["${{Map.SecondMap.value}}", "None"];
 
-        let mut parser = TemplateStr::new(Some(var.var_map), None);
+        let parser = TemplateStr::new(Some(var.var_map), None);
         
         assert_eq!(parser.parse_variable(text_1[0].to_string()), text_1[1]);
         assert_eq!(parser.parse_variable(text_2[0].to_string()), text_2[1]);
@@ -128,7 +128,6 @@ mod function {
 
     }
 }
-
 
 #[cfg(test)]
 mod condition {
@@ -512,3 +511,22 @@ mod condition {
 
     }
 }
+
+#[cfg(test)]
+mod switch {
+    use super::*;
+
+    #[test]
+    fn test_switch() {
+        let var = GlobalVar::new();
+
+        let text_switch_1 = vec!["?{{str; Jame=#0, Tony:=#1, Marco:=#2, default=#default}}", "#0"];
+        let text_switch_2 = vec!["?{{int:int; 56=#0, 36=#1, 32=#2, default=#default}}", "#2"];
+
+        let parser = TemplateStr::new(Some(var.var_map), None);
+        
+        assert_eq!(parser.parse_switch(text_switch_1[0].to_string()), text_switch_1[1]);
+        assert_eq!(parser.parse_switch(text_switch_2[0].to_string()), text_switch_2[1]);
+    }
+}
+

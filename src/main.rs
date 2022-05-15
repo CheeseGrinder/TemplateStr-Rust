@@ -46,9 +46,9 @@ fn main() {
         },
     };
 
-    let mut template = TemplateStr::new(Some(map), Some(vec));
+    let template = TemplateStr::new(Some(map), Some(vec));
 
-    let text = template.parse(r#"{{#<n:5> < "test56": yes || no}}"#.to_string());
+    let text = template.parse("?{{str; Jame=#0, Tony:=#1, Marco:=#2, default=#default}}".to_string());
 
     println!("{}", text);
     

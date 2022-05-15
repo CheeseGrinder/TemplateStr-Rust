@@ -192,7 +192,7 @@ impl TemplateStr {
         }
     }
 
-    pub fn parse(&mut self, mut text: String) -> String {
+    pub fn parse(&self, mut text: String) -> String {
 
         text = self.parse_variable(text);
         text = self.parse_function(text);
@@ -202,7 +202,7 @@ impl TemplateStr {
         return text
     }
 
-    pub fn parse_variable(&mut self, text: String) -> String {
+    pub fn parse_variable(&self, text: String) -> String {
 
         
         if !self.has_variable(text.to_string()) { return text.to_string() };
@@ -269,11 +269,10 @@ impl TemplateStr {
 
                     if check_exist_fn(&self.function_map, function_name.to_string()) {
 
-                        let mut result_text_fn: String = "None".to_string();
+                        let result_text_fn: String;
                         let custom_function = self.function_map[function_name];
 
                         if key != "" {
-                            println!("{:?}", key);
 
                             result_text_fn = custom_function(typing(&self.reg_typing, key.to_string(), &self.variable_map, None));
 
@@ -329,11 +328,57 @@ impl TemplateStr {
         return text_ed
     }
 
-    pub fn parse_switch(&self, mut text: String) -> String {
-        text = text;
+    pub fn parse_switch(&self, text: String) -> String {
+        if !self.has_switch(text.to_string()) { return text.to_string() };
+        let mut text_ed = text.to_string();
+
+        for v in find_all_group(&self.reg_switch, &text) {
+
+            let match_text = &v["match"];
+            let mut key= "None";
 
 
-        return text
+            let mut map_temp: HashMap<String, String> = HashMap::new();
+            let mut result: String = "".to_string();
+
+            for n  in v["val"].split(", ") {
+                let key_value: Vec<&str> = n.split("=").collect();
+                map_temp.insert(key_value[0].to_string(), key_value[1].to_string());
+            }
+
+            if v.contains_key("key") { key = "key" };
+            if v.contains_key("keyTyped") { key = "keyTyped" };
+
+
+            if key == "key" {
+                for (key, value) in map_temp {
+                    if key == self.variable_map[&v["key"]].get_to_string() {
+                        result = value;
+                        break;
+                    } else {
+                        result = v["default"].to_string()
+                    }
+                }
+            } else if key == "keyTyped" {
+                let key_var = &v["keyTyped"];
+                let type_var = &v["type"];
+
+                for (key, value) in map_temp {
+                    let val_var = get_variable(&key_var, &self.variable_map).0.unwrap();
+
+                    if val_var == &typing(&self.reg_typing, key, &self.variable_map, Some(type_var.to_string()))[0] {
+                        result = value;
+                        break;
+                    } else {
+                        result = v["default"].to_string()
+                    }
+                }
+            }
+
+            text_ed = text_ed.replace(match_text, &result);
+        }
+
+        return text_ed
     }
 
     pub fn has_one(&self, text: String) -> bool {
