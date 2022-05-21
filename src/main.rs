@@ -28,14 +28,16 @@ fn main() {
     let vec: FuncMap = list_func![test, test_type];
 
     let map: VMap = varmap!{
+        "Build" => "Succes",
+        "var" => "int",
         "str" => "Jame",
-        "age" => 32,
+        "int" => 32,
         "float" => 4.2,
         "bool" => true,
         "lower" => "azerty",
         "upper" => "AZERTY",
         "swap" => "AzErTy",
-        "cfold" => "grüßen",
+        // "cfold" => "grüßen",
         "Map" => varmap!{
             "value" => "Map in Map",
         },
@@ -46,9 +48,9 @@ fn main() {
         },
     };
 
-    let template = TemplateStr::new(Some(map), Some(vec));
+    let template = TemplateStr::new(map, Some(vec));
 
-    let text = template.parse("?{{str; Jame=#0, Tony:=#1, Marco:=#2, default=#default}}".to_string());
+    let text = template.parse("${{${{var}}}}".to_string());
 
     println!("{}", text);
     

@@ -1,7 +1,7 @@
 #[macro_export]
 macro_rules! varmap {
 
-    ($($key: expr => $val: expr $(,) ?)*) => {{
+    ($($key:expr => $val:expr $(,) ?)*) => {{
 
             use template_str::t_type::{VariableMap, TVal};
             use std::collections::HashMap;
@@ -32,7 +32,7 @@ macro_rules! varmap {
                     },
                     _ => {
                         println!("{:?}", value.type_id());
-                        panic!("lol"); 
+                        panic!("this type is not cast"); 
                     },
                 }
             };
@@ -51,7 +51,7 @@ macro_rules! varmap {
 
 #[macro_export]
 macro_rules! list_func {
-    ($($func: expr $(,) ?)*) => {{
+    ($($func:expr $(,) ?)*) => {{
 
         use template_str::t_type::{FuncMap, Func};
         let mut map = FuncMap::new();
