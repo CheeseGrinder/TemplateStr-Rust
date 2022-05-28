@@ -1,0 +1,19 @@
+Varaible : ${{VariableName}}
+    reg : (?P<match>\${{(?P<key>[\w._-]+)}})
+
+Function : @{{test}} @{{test test2}} @{{test param, b/test}}
+    reg : (?P<match>@{{(?P<functionName>[^{@}\s]+)(?:; (?P<parameters>[^{@}]+))?}})
+    
+Condition :
+    reg : (?P<match>#{{(?P<conditionValue1>[^{#}]+) (?P<conditionSymbol>==|!=|<=|<|>=|>) (?P<conditionValue2>[^{#}]+); (?P<trueValue>[^{}]+) \| (?P<falseValue>[^{}]+)}})
+    
+Switch :
+    reg : (?P<match>\?{{(?:(?P<key>[^{?}/]+)|(?P<type>str|int|float)/(?P<tKey>[^{?}]+)); (?P<values>(?:[^{}]+):(?:[^{}]+)), _:(?P<defaultValue>[^{}]+)}})
+
+Typing :
+    reg : \"(?P<str_double>[^\"]+)\"|\'(?P<str_single>[^\']+)\'|\x60(?P<str_back>[^\x60]+)\x60|b/(?P<bool>[Tt]rue|[Ff]alse)|i/(?P<int>[0-9_]+)|f/(?P<float>[0-9_.]+)|(?P<variable>[^<>\" ]+)
+    
+    
+    
+    
+    
