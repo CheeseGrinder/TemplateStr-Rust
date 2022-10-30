@@ -1,17 +1,17 @@
-Varaible : ${{VariableName}}
-    reg : (?P<match>\${{(?P<key>[\w._-]+)}})
+Varaible : ${test} ${test.test} ${test_test.test} ${test[0]}
+    reg : (?P<match>\$\{(?P<variable>[\w._-]+)(?:\[(?P<index>[\d]+)])?})
 
-Function : @{{test}} @{{test test2}} @{{test param, b/test}}
-    reg : (?P<match>@{{(?P<functionName>[^{@}\s]+)(?:; (?P<parameters>[^{@}]+))?}})
+Function : @{test} @{test; test2} @{test; param b/test}
+    reg : (?P<match>@\{(?P<functionName>[^{}\s]+)(?:; (?P<parameters>[^{}]+))?})
     
-Condition :
-    reg : (?P<match>#{{(?P<conditionValue1>[^{#}]+) (?P<conditionSymbol>==|!=|<=|<|>=|>) (?P<conditionValue2>[^{#}]+); (?P<trueValue>[^{}]+) \| (?P<falseValue>[^{}]+)}})
+Condition : #{test == test; test | test} #{test != test; #{"test" == test; test | test} | test}
+    reg : (?P<match>#\{(?P<conditionValue1>[^{#}]+) (?P<conditionSymbol>==|!=|<=|<|>=|>) (?P<conditionValue2>[^{#}]+); (?P<trueValue>[^{}]+) \| (?P<falseValue>[^{}]+)})
     
-Switch :
-    reg : (?P<match>\?{{(?:(?P<key>[^{?}/]+)|(?P<type>str|int|float)/(?P<tKey>[^{?}]+)); (?P<values>(?:[^{}]+):(?:[^{}]+)), _:(?P<defaultValue>[^{}]+)}})
+Switch : ?{test; test::ok, test2::ko, _::default} ?{int/test; test::ok, test2::nop, _::default}
+    reg : (?P<match>\?\{(?:(?P<type>str|int|float)/)?(?P<variable>[\w._-]+)(?:\[(?P<index>[\d]+)])?; (?P<values>(?:[^{}]+::[^{}]+){2,}), _::(?P<defaultValue>[^{}]+)})
 
-Typing :
-    reg : \"(?P<str_double>[^\"]+)\"|\'(?P<str_single>[^\']+)\'|\x60(?P<str_back>[^\x60]+)\x60|b/(?P<bool>[Tt]rue|[Ff]alse)|i/(?P<int>[0-9_]+)|f/(?P<float>[0-9_.]+)|(?P<variable>[^<>\" ]+)
+Typing : 
+    reg : "(?P<str_double>[^"]+)"|'(?P<str_single>[^']+)'|`(?P<str_back>[^`]+)`|b/(?P<bool>[Tt]rue|[Ff]alse)|i/(?P<int>[0-9_]+)|f/(?P<float>[0-9_.]+)|(?P<variable>[\w._-]+)(?:\[(?P<index>[\d]+)])?|\((?P<list>[^\(\)]+)\)
     
     
     

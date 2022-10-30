@@ -1,4 +1,4 @@
-use template_str::{varmap, list_func, TemplateStr, t_type::{TVal, FuncMap, VariableMap as VMap}};
+use template_str::{varmap, list_func, TemplateStr, t_type::{TVal, FuncMap, VariableMap as VMap}, vecTval};
 
 fn test(_: Vec<TVal>) -> String {
     return "Test custom Function".to_string();
@@ -17,6 +17,7 @@ fn test_type(list: Vec<TVal>) -> String {
             TVal::Float(_) => { text = format!("{} : {}", text, "test Float") },
             TVal::Bool(_) => { text = format!("{} : {}", text, "test Bool") },
             TVal::Hashmap(_) => { text = format!("{} : {}", text, "test Hashmap") },
+            TVal::Vec(_) => todo!(),
             // _ => { text = format!("{} : {}", text, "None") },
         };
     }
@@ -41,17 +42,29 @@ fn main() {
         "Map" => varmap!{
             "value" => "Map in Map",
         },
+        "test" => "",
         "MasterMap" => varmap!{
+            "Vec" => vec![
+                    TVal::Bool(true), 
+                    TVal::Str("test".to_string())
+                ],
             "SecondMap" => varmap!{
                 "value" => "Map in Map in Map",
             },
         },
+        "Vec" => vecTval![
+            true, 
+            "test"
+        ],
     };
 
     let template = TemplateStr::new(map, Some(vec));
 
-    let text = template.parse("${{${{var}}}}".to_string());
+    let text = template.parse_variable("${Vec[2]}".to_string());
 
-    println!("{}", text);
-    
+
+    println!("{:#?}", text.unwrap_err().to_string())
+
+     
+
 }
