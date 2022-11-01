@@ -4,7 +4,7 @@ pub mod t_macro;
 pub mod reg;
 pub mod error;
 
-use std::collections::HashMap;
+use std::{collections::HashMap};
 
 use chrono::{Utc, DateTime};
 use error::TmplError;
@@ -33,13 +33,15 @@ fn get_variable<'a>(key: &'a str, var_map: &'a VariableMap, index: Option<usize>
         });
     };
 
-    if index.is_some() && maybe_tval.unwrap().get_type() == "Vec" {
+    if let Some((index, TVal::Vec(item))) = index.zip(maybe_tval) {
 
-        if maybe_tval.unwrap().get_vec_len() <= index.unwrap() {
-            return  Err(TmplError::IndexOutOfRange { key: (key.to_string()), index: (index.unwrap()) });
+    // if index.is_some() && maybe_tval.unwrap().get_type() == "Vec" {
+
+        if item.len() <= index {
+            return  Err(TmplError::IndexOutOfRange { key: (key.to_string()), index: (index) });
         }
 
-        maybe_tval = maybe_tval.unwrap().get_vec_item(index.unwrap());
+        maybe_tval = Some(&item[index]);
 
     } else if index.is_some() {
         return Err(TmplError::NotAArray { key: (key.to_string()) });
