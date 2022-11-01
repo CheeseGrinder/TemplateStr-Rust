@@ -192,9 +192,6 @@ fn typing<'a, 'b>(reg: &'a Regex, parametres: String, var_map: &'b VariableMap, 
     } else if type_.as_ref().unwrap() == "bool" {
         vec_typing.push(TVal::Bool(parametres.parse::<bool>().unwrap()))
     }
-    
-    
-
     return Ok(vec_typing);
 }
 

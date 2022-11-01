@@ -1,4 +1,4 @@
-use template_str::{varmap, list_func, TemplateStr, t_type::{TVal, FuncMap, VariableMap as VMap}, vecTval};
+use template_str::{varmap, list_func, TemplateStr, t_type::{TVal, FuncMap, VariableMap as VMap}, vecTval, error::TmplError};
 
 fn test(_: Vec<TVal>) -> String {
     return "Test custom Function".to_string();
@@ -60,7 +60,9 @@ fn main() {
 
     let template = TemplateStr::new(map, Some(vec));
 
-    let text = template.parse_variable("${Vec[2]}".to_string());
+    let text: Result<String, TmplError> = template.parse("${Vec[2]}".to_string());
+
+    let _: bool = template.has_condition("${Vec[2]}".to_string());
 
 
     println!("{:#?}", text.unwrap_err().to_string())
