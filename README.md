@@ -1,7 +1,7 @@
 <div align="center">
     <h1>TemplateStr-Go</h1>
     <h2>TemplateStr allows to add variable, function, condition and switch in a string.</h2>
-    <img src="https://img.shields.io/static/v1?label=Rust&message=1.50%5E&color=964B00&style=flat-square&logo=Rust&logoColor=964B00"/>
+    <img src="https://img.shields.io/static/v1?label=Rust&message=1.58%5E&color=964B00&style=flat-square&logo=Rust&logoColor=964B00"/>
     <a href="https://github.com/CheeseGrinder/TemplateStr-Rust/actions/workflows/rust.yml">
         <img src="https://img.shields.io/github/workflow/status/CheeseGrinder/TemplateStr-Rust/Rust Test?label=Test&style=flat-square"/>
     </a>
