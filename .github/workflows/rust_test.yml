@@ -19,10 +19,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Setup rust - ${{matrix.rust}}
-      uses : actions-rs/toolchain@v1 
+      uses : actions-rust-lang/setup-rust-toolchain@v1
       with :
         toolchain : ${{matrix.rust}}
         override : true 
